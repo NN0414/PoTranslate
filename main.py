@@ -9,30 +9,27 @@ def build_translation_dict(excel_file, po_file):
 
     print("Building translation replacement associations...")
 
-    all_texts = []
-
-    # Read all original and translated text data from all worksheets at once
-    for sheet_name in workbook.sheetnames:
-        sheet = workbook[sheet_name]
-
-        # Get ranges of original and translated columns
-        original_texts = sheet['A']
-        translated_texts = sheet['C']
-
-        all_texts.extend(zip(original_texts, translated_texts))
-
-    # Build translation dictionary
-    translation_dict.update(
+    # Iterate over all worksheets and collect original and translated text pairs
+    all_texts = (
         (original_text_cell.value, translated_text_cell.value)
-        for original_text_cell, translated_text_cell in all_texts
+        for sheet_name in workbook.sheetnames
+        for original_text_cell, translated_text_cell in zip(
+            workbook[sheet_name]['A'], workbook[sheet_name]['C']
+        )
         if original_text_cell.value is not None and translated_text_cell.value is not None
     )
+
+    # Build translation dictionary directly from the worksheet data
+    translation_dict.update(all_texts)
 
     return translation_dict
 
 def apply_translations(excel_file, po_file):
     # Build dictionary of original text to translated text
     translation_dict = build_translation_dict(excel_file, po_file)
+
+    # Convert translation_dict to a set for faster lookups
+    translation_set = set(translation_dict.keys())
 
     # Read the .po file
     po = polib.pofile(po_file)
@@ -41,7 +38,7 @@ def apply_translations(excel_file, po_file):
 
     for entry in po:
         # If a corresponding translation is found in the dictionary, replace the translation
-        if entry.msgid in translation_dict:
+        if entry.msgid in translation_set:
             print(entry.msgid)
 
             if entry.msgid_plural:
@@ -50,6 +47,13 @@ def apply_translations(excel_file, po_file):
                 entry.msgstr_plural[1] = translation_dict[entry.msgid]
             else:
                 entry.msgstr = translation_dict[entry.msgid]
+
+            # Remove the processed entry from the set
+            translation_set.remove(entry.msgid)
+
+        # Check if the translation set is empty
+        if not translation_set:
+            break
 
     # Save the modified .po file
     po.save(po_file)
