@@ -1,7 +1,7 @@
 import openpyxl
 import polib
 
-def build_translation_dict(excel_file, po_file):
+def build_translation_dict(excel_file):
     # Read the Excel file
     workbook = openpyxl.load_workbook(excel_file)
 
@@ -26,7 +26,7 @@ def build_translation_dict(excel_file, po_file):
 
 def apply_translations(excel_file, po_file):
     # Build dictionary of original text to translated text
-    translation_dict = build_translation_dict(excel_file, po_file)
+    translation_dict = build_translation_dict(excel_file)
 
     # Convert translation_dict to a set for faster lookups
     translation_set = set(translation_dict.keys())
@@ -43,8 +43,8 @@ def apply_translations(excel_file, po_file):
 
             if entry.msgid_plural:
                 # For msgid_plural, replace all msgstrs
-                entry.msgstr_plural[0] = translation_dict[entry.msgid]
-                entry.msgstr_plural[1] = translation_dict[entry.msgid]
+                for idx, msgstr in enumerate(entry.msgstr_plural.values()):
+                    entry.msgstr_plural[idx] = translation_dict[entry.msgid]
             else:
                 entry.msgstr = translation_dict[entry.msgid]
 
