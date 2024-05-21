@@ -1,5 +1,6 @@
 import openpyxl
 import polib
+import pandas as pd
 
 def build_translation_dict(excel_file, po_file):
     # Read the Excel file
