@@ -15,13 +15,14 @@ This is a Python script designed to assist with translations by applying transla
 1. Clone this repository to your local machine:
 
     ```
-    git clone https://github.com/your_username/translation-tool.git
+    git clone https://github.com/NN0414/PoTranslate.git
     ```
 
 2. Install the required Python packages:
 
     ```
-    pip install openpyxl polib
+    pip install polib
+    pip install openpyxl
     ```
 
 ## Usage
