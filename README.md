@@ -31,9 +31,10 @@ This is a Python script designed to assist with translations by applying transla
 
 Prepare an Excel file with the following structure:
 
-| Original Text | Context | Translated Text |
-|---------------|---------|-----------------|
-| Hello         | Greeting| 你好             |
+| msgid | msgid_plural | original msgstr | new msgstr |
+|-------|--------------|-----------------|------------|
+| Hello |   | Greeting | 你好 |
+| Apple | Apples | Apples | 蘋果 |
 | ...
 
 Save this Excel file for later use.
